@@ -1,0 +1,141 @@
+/* 
+    - Learning Position Anchor {
+        anchor-name => parent
+        position-anchor => child
+        position-area => child
+    }
+    - ::scroll-button(direction) => parent
+    - Scroll Snapping {
+        scroll-snap-type: dir - how much cards will snap
+        Example: x mandatory -> x-flow -- nextCard =>  parent
+        ------
+        scroll-snap-align: start Or end; =>  child
+    }
+    - aspect-ratio: 5 / 3; -> Width To Height Percent {
+        if width 400px -> height = (5 / 3) * 400 = 225px => child
+    }
+    - scroll-marker-group: before or after; => parent
+    - parent::scroll-marker-group {} create the group => parent
+    - child::scroll-marker {} create the column marker => child
+    - ::scroll-marker:target-current => child
+*/
+
+
+:root {
+    --primary-color: rgb(37, 35, 37);
+    --brand-color: rgb(104, 16, 175);
+}
+body {
+    background-color: black;
+    color: white;
+    font-family: arial;
+}
+
+* {
+    margin: 2px;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* Parent */
+.container {
+    width: 100%;
+    margin: 3em auto;
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto; /* Making Scroll */
+    scroll-behavior: smooth; /* Smothing Scroll */
+    /* Modern Position Giving it A Name */
+    anchor-name: --container;
+    /* How Many Cards To Scroll Per Click */
+    scroll-snap-type: x mandatory;
+    /* Using Scroll Marker Group */
+    scroll-marker-group: after;
+}
+
+.container::-webkit-scrollbar{
+    display: none; /* Hide Scrollbar */
+}
+/* Making Scroll Buttons in css only */
+.container::scroll-button(right),
+.container::scroll-button(left) {
+    content: "→";
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    background-color: var(--brand-color);
+    font-size: 3em;
+    padding-bottom: .3em; /* Center Text */
+    cursor: pointer;
+    position: fixed;
+    /* Modern Position */
+    /*Using Position Anchor With Acnhor Name*/
+    position-anchor: --container;
+    /* Position Area To Place The Element */
+    position-area: right center;
+    translate: -70%;
+}
+.container::scroll-button(left){
+    content: "←";
+    position-area: left center;
+    translate: 70%;
+}
+/* Disable Styling */
+.container::scroll-button(right):disabled,
+.container::scroll-button(left):disabled {
+    opacity: 0.5;
+    cursor: no-drop;
+}
+
+/* Creating Scroll Marker */
+.container::scroll-marker-group {
+    display: flex;
+    justify-content: center;
+    gap: .5em;
+}
+.card::scroll-marker {
+    content: "";
+    height: 1em;
+    width: 1em;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+}
+
+/* Highlight Current Position */
+.card::scroll-marker:target-current {
+    background-color: var(--brand-color);
+}
+.card::scroll-marker:not(:target-current):hover {
+    background-color: var(--brand-color);
+    opacity: 0.5;
+}
+
+
+/* Childs */
+.card {
+    flex: 0 0 20em; /* Make Sure cards Dont Grow */
+    background-color: var(--primary-color);
+    padding: 1em;
+    border-radius: .5em;
+    text-align: center;
+    align-content: center;
+    /* Where Is The Snapping Align */
+    scroll-snap-align: start;
+    /* For Small Screens Height = 5 / 3 * width */
+    aspect-ratio: 5 / 3;
+}
+
+@media (max-width: 500px) {
+    .card{
+        flex: 0 0 100%;
+    }
+}
+
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: black;
+        --text-color: white;
+    }
+}
